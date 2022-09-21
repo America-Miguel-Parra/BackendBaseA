@@ -1,15 +1,19 @@
-const { application } = require('express')
 const express = require('express')
+const messagesRouter = require ('./routes/messages')
+
 class Server {
     constructor(){
-        this.ap = express()
+        this.app = express()
+        this.paths = {
+            messages: "/api/v1/messages"
+        }
+        
         this.routes()
     }
 routes(){
-    this.app.get('/' (req, res) => {
-        res.send('Hello World')
-    })
-}
+    this.app.use(this.paths.messages, messagesRouter)
+    }
+
 
 listen(){
     this.app.listen(process.env.PORT, () => {
