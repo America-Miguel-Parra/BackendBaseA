@@ -13,4 +13,12 @@ const byeMessages =(req, res)=>{
 const postMessage =(req, res)=>{
     res.send('Menjaje POST')  
 }
-module.exports ={rootMessage,hiMessages,byeMessages, postMessage}
+
+const putMessage =(req, res)=>{
+    res.send('Menjate put')  
+}
+
+const deleteMessage =(req, res)=>{
+    res.send('Menjaje delete')  
+}
+module.exports ={rootMessage,hiMessages,byeMessages, postMessage, putMessage, deleteMessage}

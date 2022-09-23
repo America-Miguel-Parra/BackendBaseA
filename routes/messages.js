@@ -1,6 +1,6 @@
 const{Router} = require("express")
 const router = Router()
-const {rootMessage, hiMessages, byeMessages} = require ('../controllers/messages.js')
+const {rootMessage, hiMessages, byeMessages, postMessage,deleteMessage, putMessage} = require ('../controllers/messages.js')
 
 
 //router.get("",()=> {})
@@ -10,4 +10,10 @@ router.get("/hi",hiMessages) //END POINT
 
 router.get("bye",byeMessages) //END POINT
 
-module.exports = router
+router.post('/',postMessage)
+
+router.post('/',putMessage)
+
+router.post('/',deletetMessage)
+
+module.exports = (rootMessage, hiMessages, byeMessages, postMessage,putMessage,deleteMessage)
