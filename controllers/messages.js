@@ -10,4 +10,7 @@ const byeMessages =(req, res)=>{
     res.send('Adios mundo')  
 }
 
-module.exports ={rootMessage,hiMessages,byeMessages}
+const postMessage =(req, res)=>{
+    res.send('Menjaje POST')  
+}
+module.exports ={rootMessage,hiMessages,byeMessages, postMessage}
