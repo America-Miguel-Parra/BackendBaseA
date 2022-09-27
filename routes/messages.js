@@ -14,6 +14,6 @@ router.post('/',postMessage)
 
 router.post('/',putMessage)
 
-router.post('/',deletetMessage)
+router.post('/',deleteMessage)
 
 module.exports = (rootMessage, hiMessages, byeMessages, postMessage,putMessage,deleteMessage)
