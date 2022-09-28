@@ -12,8 +12,8 @@ router.get("bye",byeMessages) //END POINT
 
 router.post('/',postMessage)
 
-router.post('/',putMessage)
+router.put('/',putMessage)
 
-router.post('/',deleteMessage)
+router.delete('/',deleteMessage)
 
-module.exports = (rootMessage, hiMessages, byeMessages, postMessage,putMessage,deleteMessage)
+module.exports = router
