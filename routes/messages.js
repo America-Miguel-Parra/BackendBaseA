@@ -6,7 +6,7 @@ const {rootMessage, hiMessages, byeMessages, postMessage,deleteMessage, putMessa
 //router.get("",()=> {})
 router.get("/",rootMessage) //END POINT
 
-router.get("/hi",hiMessages) //END POINT
+router.get("/hi/:name",hiMessages) //END POINT
 
 router.get("bye",byeMessages) //END POINT
 

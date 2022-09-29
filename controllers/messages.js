@@ -13,7 +13,8 @@ const rootMessage =(req=request, res=response) =>{
 }
 
 const hiMessages =(req=request, res=response)=>{
-    res.status(403).json({msg:"Hola mundo"})  
+    const {name}=req.params
+    res.status(403).json({msg:"Hola" + name})  
 }
 
 const byeMessages =(req=request, res=response)=>{
