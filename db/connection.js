@@ -9,6 +9,6 @@ const config = {
     connectionLimit: process.env.DB_CONN_LIMIT   
 }
 
-const pool = mariadb.creatPool(config)
+const pool = mariadb.createPool(config)
 
 module.exports = pool
