@@ -1,5 +1,5 @@
 const { request, response } = require("express");
-const bcryptjs=require("bcrypts")
+const bcryptjs= require("bcryptjs")
 const pool = require("../db/connection")
 
 const getUser = async (req=request, res=response) =>{
@@ -244,4 +244,55 @@ const updateUserByUsuario = async (req=request, res=response) =>{
 
 }
 
-module.exports={getUser, getUserByID, deleteUserByID,addUser, updateUserByUsuario}
+
+const sigIn = async (req=request, res=response) =>{
+    const {
+        Usuario,
+        Contrasena
+
+    } = req.body
+
+
+    if(
+        !Usuario ||
+        !Contrasena
+        ){
+            res.status(400).json({msg: "Falta informacion del usuario"})
+            return
+        }
+
+
+    let conn;
+
+    try {
+        conn = await pool.getConnection()
+        
+        const [user] = await conn.query(`SELECT Usuario, Contraseña, Activo FROM Usuarios WHERE Usuario = '${Usuario}'`)
+
+        if (!user || user.Activo === 'N') {
+            res.status(403).json({msg: `El usuario o la contraseña son incorrectos.`})
+            return
+        }
+
+        const accesoValido = bcryptjs.compareSync(Contrasena, user.Contrasena)
+
+        if(!accesoValido){
+           res.status(404).json({msg: `El usuario o la contraseña son incorrectos.`})
+            return
+        }
+        res.json({msg: `El usuario ${Usuario} ha iniciado sesion satisfactoriamente`})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({json})
+        
+    } finally {
+        if(conn){
+            conn.end()
+        }
+
+    }
+
+
+}
+
+module.exports={getUser, getUserByID, deleteUserByID,addUser, updateUserByUsuario, sigIn}
