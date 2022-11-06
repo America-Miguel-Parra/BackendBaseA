@@ -127,8 +127,8 @@ const addUser = async (req=request, res=response) =>{
         }
 
 
-        const salt = bcrypts.genSaltSync()
-        const contrasenaCifrada = bcryptjs.hashSync(Contrasena.salt)    
+        const salt = bcryptjs.genSaltSync()
+        const contrasenaCifrada = bcryptjs.hashSync(Contrasena,salt)    
 
         const {affectedRows} = await conn.query(`
         INSERT INTO Usuarios (
@@ -245,54 +245,108 @@ const updateUserByUsuario = async (req=request, res=response) =>{
 }
 
 
-const sigIn = async (req=request, res=response) =>{
+const signIn = async (req=request, res=response) =>{
     const {
         Usuario,
         Contrasena
-
-    } = req.body
-
+    }= req.body
 
     if(
-        !Usuario ||
+        !Usuario|| 
         !Contrasena
-        ){
-            res.status(400).json({msg: "Falta informacion del usuario"})
-            return
-        }
-
-
+     ) {
+        res.status(400).json({msg:"Falta informacion del usuario"})
+        return
+    }
     let conn;
 
     try {
         conn = await pool.getConnection()
-        
-        const [user] = await conn.query(`SELECT Usuario, Contraseña, Activo FROM Usuarios WHERE Usuario = '${Usuario}'`)
 
-        if (!user || user.Activo === 'N') {
-            res.status(403).json({msg: `El usuario o la contraseña son incorrectos.`})
+        const [user] = await conn.query(`SELECT Usuario, Contrasena, Activo FROM Usuarios WHERE Usuario = '${Usuario}'`)
+        if (!user || user.Activo === 'N' ){
+            let code = !user ? 1 :2;
+            res.status(403).json({msg:`El Usuario o la Contraseña son incorrectos`,errorCode:code})
             return
         }
 
         const accesoValido = bcryptjs.compareSync(Contrasena, user.Contrasena)
 
         if(!accesoValido){
-           res.status(404).json({msg: `El usuario o la contraseña son incorrectos.`})
+            res.status(403).json({msg:`El Usuario o la Contraseña son incorrectos`, errorCode:3})
             return
         }
-        res.json({msg: `El usuario ${Usuario} ha iniciado sesion satisfactoriamente`})
+
+        res.json({msg:`El usuario ${Usuario} ha iniciado sesión satisfactoriamente`})
     } catch (error) {
         console.log(error)
-        res.status(500).json({json})
-        
-    } finally {
-        if(conn){
+        res.status(500).json({error})
+
+    } finally{
+        if (conn){
             conn.end()
         }
-
     }
-
-
 }
 
-module.exports={getUser, getUserByID, deleteUserByID,addUser, updateUserByUsuario, sigIn}
+
+const NuevaContrasena = async (req=request, res=response) =>{
+    const {
+        Usuario,
+        AContrasena,
+        NContrasena
+
+    }= req.body
+
+    if(
+        !Usuario|| 
+        !AContrasena ||
+        !NContrasena
+     ) {
+        res.status(400).json({msg:"Falta informacion del usuario"})
+        return
+    }
+    let conn;
+
+    try {
+        conn = await pool.getConnection()
+
+        const [user] = await conn.query(`SELECT Usuario, Contrasena, Activo FROM Usuarios WHERE Usuario = '${Usuario}'`)
+        if (!user || user.Activo === 'N' ){
+            let code = !user ? 1 :2;
+            res.status(403).json({msg:`El Usuario o la Contraseña son incorrectos`,errorCode:code})
+            return
+        }
+
+        const informacionValida = bcryptjs.compareSync(AContrasena, user.Contrasena)
+
+        if(!informacionValida){
+            res.status(403).json({msg:`El Usuario o la Contraseña son incorrectos`, errorCode:3})
+            return
+        }
+
+        const salt = bcryptjs.genSaltSync()
+        const contrasenaCifrada = bcryptjs.hashSync(NContrasena,salt)
+
+        const {affectedRows} = await conn.query( `
+        UPDATE Usuarios SET
+        Contrasena='${contrasenaCifrada}'
+        WHERE Usuario ='${Usuario}'`
+        , (error) => {throw new Error(error)})
+        if (affectedRows ===0){
+            res.status(404).json ({msg: `No se puede actualizar la contraseña de ${Usuario}`})
+            return
+        }
+
+        res.json({msg:`La contraseña de ${Usuario} se actualizo satisfactoriamente`})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error})
+
+    } finally{
+        if (conn){
+            conn.end()
+        }
+    }
+}
+module.exports={getUser, getUserByID, deleteUserByID,addUser, updateUserByUsuario, signIn, NuevaContrasena}
