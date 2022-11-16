@@ -1,6 +1,7 @@
 const express = require('express')
 const messagesRouter = require ('./routes/messages')
 const usuariosRouter = require ('./routes/usuarios')
+const FIFARouter = require ('./routes/FIFA')
 
 
 const cors = require("cors")
@@ -11,6 +12,7 @@ class Server {
         this.paths = {
             messages: "/api/v1/messages",
             usuarios:"/api/v1/usuarios",
+            FIFA:"/api/v1/FIFA",
           
         }
         
@@ -21,6 +23,7 @@ class Server {
 routes(){
     this.app.use(this.paths.messages, messagesRouter)
     this.app.use(this.paths.usuarios, usuariosRouter)
+    this.app.use(this.paths.FIFA, FIFARouter)
     }
 
     middlewares(){

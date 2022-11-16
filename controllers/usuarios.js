@@ -169,6 +169,7 @@ const addUser = async (req=request, res=response) =>{
 
 const updateUserByUsuario = async (req=request, res=response) =>{
     const {
+        Usuario,
         Nombre,
         Apellidos,
         Edad,
@@ -179,7 +180,7 @@ const updateUserByUsuario = async (req=request, res=response) =>{
     } = req.body
 
 
-    if(
+    if (
         !Usuario||
         !Nombre||
         !Apellidos||
