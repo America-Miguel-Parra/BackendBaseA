@@ -46,4 +46,23 @@ const modeloUsuarios = {
     ` 
 }
 
-module.exports = modeloUsuarios
+const updateUsuario = (
+    Usuario,
+    Nombre,
+    Apellidos,
+    Edad,
+    Genero,
+    Fecha_Nacimiento
+) => {
+    return `
+    UPDATE Usuarios SET
+        Nombre = '${Nombre}',
+        Apellidos = '${Apellidos}',
+        Edad = ${Edad},
+        ${Genero ? `Genero = '${Genero}',`:''}
+        Fecha_Nacimiento = '${Fecha_Nacimiento}'
+    WHERE Usuario = '${Usuario}'
+    `
+}
+
+module.exports = {modeloUsuarios, updateUsuario}

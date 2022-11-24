@@ -1,7 +1,7 @@
 const { request, response } = require("express");
 const bcryptjs= require("bcryptjs")
 const pool = require("../db/connection")
-const modeloUsuarios = require("../models/usuarios");
+const {modeloUsuarios, updateUsuario} = require("../models/usuarios");
 
 const getUser = async (req=request, res=response) =>{
     let conn;
@@ -174,7 +174,6 @@ const updateUserByUsuario = async (req=request, res=response) =>{
         Apellidos,
         Edad,
         Genero,
-        //se elimino contrasena y usuario
         Fecha_Nacimiento = "1900-01-01"
 
     } = req.body
@@ -185,7 +184,8 @@ const updateUserByUsuario = async (req=request, res=response) =>{
         !Nombre||
         !Apellidos||
         !Edad||
-        !Genero 
+        !Genero||
+        !Fecha_Nacimiento 
         //se elimino contrasena
     ){
             res.status(400).json({msg: "Falta informacion del usuario"})
@@ -198,24 +198,21 @@ const updateUserByUsuario = async (req=request, res=response) =>{
     try {
         conn = await pool.getConnection()
         
-        //const [user] = await conn.query(`SELECT Usuario, Nombre, Apellidos, Edad, Genero, Fecha_Nacimiento FROM Usuarios WHERE Usuario = '${Usuario}'`)
-        const [user] = await conn.query(modeloUsuarios.queryGetUserInfo, [Usuario])
+        const [user] = await conn.query(modeloUsuarios.updateUsuario.queryGetUserInfo, [Usuario])
 
         if (!user) {
             res.status(403).json({msg: `El usuario ${Usuario} ya se encuentra registrado.`})
             return
         }
 
-
-
-        const {affectedRows} = await conn.query(modeloUsuarios.queryUpdateByUsuario, [
-            Nombre || user.Nombre,
-            Apellidos || user.Apellidos,
-            Edad || user.Edad,
-            Genero || user.Genero,
-            Fecha_Nacimiento,
-            Usuario
-        ], (error)=>{throw new error})
+        const {affectedRows} = await conn.query(updateUsuario  (
+            Usuario,
+            Nombre,
+            Apellidos,
+            Edad,
+            Genero,
+            Fecha_Nacimiento
+        ), (error)=>{throw new error})
 
         if(affectedRows===0){
            res.status(404).json({msg: `No se pudo actualizar el registro del usuario${Usuario}`})
